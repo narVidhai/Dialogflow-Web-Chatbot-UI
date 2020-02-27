@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: dialogflow-ui
+  name: ushaflow-web
   annotations:
     kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: ushacom
@@ -12,9 +12,17 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: dialogflow-ui
+          serviceName: ushaflow-web
+          servicePort: http
+  - host: '*.web.ushaflow.com'
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ushaflow-web
           servicePort: http
   tls:
   - hosts:
     - '*.ui.dialogflow.cloud.ushakov.co'
-    secretName: dialogflow-ui-cert
+    - '*.web.ushaflow.com'
+    secretName: ushaflow-web-cert

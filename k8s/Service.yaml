@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: dialogflow-ui
+  name: ushaflow-web
 spec:
   selector:
-    app: dialogflow-ui
+    app: ushaflow-web
   ports:
   - name: http
     targetPort: 80

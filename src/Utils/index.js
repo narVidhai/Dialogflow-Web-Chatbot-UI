@@ -1,14 +1,5 @@
 import { register } from 'register-service-worker'
 
-/* Retrieves Gateway URL, if it's a hosted version or returns a fallback, if it's not */
-export const get_gateway_url = fallback => {
-    if (window.location.host.includes('cloud.ushakov.co')){
-        return `https://${window.location.host.split('.')[0]}.gateway.dialogflow.cloud.ushakov.co`
-    }
-
-    return fallback
-}
-
 /* Registers service-worker */
 export const register_service_worker = () => {
     if (process.env.NODE_ENV === 'production'){
@@ -38,7 +29,6 @@ export const register_service_worker = () => {
     }
 }
 
-/* Manages SEO, if it's a hosted version or returns a fallback, if it's not */
 export const set_seo = agent => {
     document.querySelector('title').innerText = agent.displayName
     document.querySelector('meta[name=description]').content = agent.description
