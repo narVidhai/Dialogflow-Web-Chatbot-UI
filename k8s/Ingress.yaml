@@ -14,7 +14,7 @@ spec:
         backend:
           serviceName: ushaflow-web
           servicePort: http
-  - host: '*.web.ushaflow.com'
+  - host: '*.web.ushaflow.io'
     http:
       paths:
       - path: /
@@ -24,5 +24,5 @@ spec:
   tls:
   - hosts:
     - '*.ui.dialogflow.cloud.ushakov.co'
-    - '*.web.ushaflow.com'
+    - '*.web.ushaflow.io'
     secretName: ushaflow-web-cert
