@@ -17,7 +17,7 @@
 
                 <!-- Send message button (arrow button) -->
                 <button
-                    v-if="!microphone && query.length > 0"
+                    v-if="!microphone && query.length > 0 || !microphone_supported"
                     class="button"
                     :title="(translations[lang()] && translations[lang()].sendTitle) || translations[config.fallback_lang].sendTitle"
                     :aria-label="(translations[lang()] && translations[lang()].sendTitle) || translations[config.fallback_lang].sendTitle"
@@ -108,6 +108,11 @@ export default {
             recognition: null,
             recorder: null,
             should_listen: false
+        }
+    },
+    computed: {
+        microphone_supported(){
+            return window.webkitSpeechRecognition || window.SpeechRecognition || !window.MediaRecorder.notSupported
         }
     },
     watch: {

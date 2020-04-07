@@ -25,7 +25,7 @@
                     <BubbleWrapper><Bubble v-if="message.queryResult.queryText" :text="message.queryResult.queryText" me /></BubbleWrapper>
 
                     <!-- Dialogflow Components -->
-                    <RichComponent v-for="(component, id) in message.queryResult.fulfillmentMessages" :key="id">
+                    <RichComponent v-for="(component, component_id) in message.queryResult.fulfillmentMessages" :key="component_id">
                         <!-- Text (https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#Text) -->
                         <Bubble v-if="component.text" :text="component.text.text[0]" />
 
@@ -35,6 +35,24 @@
                             :text="component.simpleResponses.simpleResponses[0].displayText || component.simpleResponses.simpleResponses[0].textToSpeech"
                         />
 
+                        <!-- RbmText (https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#rbmtext) -->
+                        <div v-if="component.rbmText">
+                            <Bubble :text="component.rbmText.text" />
+                            <div v-for="(suggestion, suggestion_id) in component.rbmText.rbmSuggestion" :key="suggestion_id">
+                                <CardButton
+                                    v-if="suggestion.reply"
+                                    :title="suggestion.reply.text"
+                                    @click.native="send({text: suggestion.reply.text.postbackData})"
+                                />
+
+                                <CardButton
+                                    v-if="suggestion.action"
+                                    :title="suggestion.action.text"
+                                    :uri="suggestion.action.openUrl.uri"
+                                />
+                            </div>
+                        </div>
+
                         <!-- Card (https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#Card) -->
                         <Card
                             v-if="component.card"
@@ -42,8 +60,8 @@
                             :subtitle="component.card.subtitle"
                             :image-uri="component.card.imageUri">
                             <CardButton
-                                v-for="button in component.card.buttons"
-                                :key="button.text"
+                                v-for="(button, button_id) in component.card.buttons"
+                                :key="button_id"
                                 :uri="button.postback"
                                 :title="button.text"
                             />
@@ -58,11 +76,31 @@
                             :image-title="component.basicCard.image.accessibilityText"
                             :text="component.basicCard.formattedText">
                             <CardButton
-                                v-for="button in component.basicCard.buttons"
-                                :key="button.title"
+                                v-for="(button, button_id) in component.basicCard.buttons"
+                                :key="button_id"
                                 :uri="button.openUriAction.uri"
                                 :title="button.title"
                             />
+                        </Card>
+
+                        <!-- RbmStandaloneCard (https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#rbmstandalonecard) -->
+                        <Card
+                            v-if="component.rbmStandaloneRichCard"
+                            :title="component.rbmStandaloneRichCard.cardContent.title"
+                            :image-uri="component.rbmStandaloneRichCard.cardContent.media.fileUri"
+                            :text="component.rbmStandaloneRichCard.cardContent.description">
+                            <div v-for="(suggestion, suggestion_id) in component.rbmStandaloneRichCard.cardContent.suggestions" :key="suggestion_id">
+                                <CardButton
+                                    v-if="suggestion.reply"
+                                    :title="suggestion.reply.text"
+                                    @click.native="send({text: suggestion.reply.text.postbackData})"
+                                />
+                                <CardButton
+                                    v-if="suggestion.action"
+                                    :title="suggestion.action.text"
+                                    :uri="suggestion.action.openUrl.uri"
+                                />
+                            </div>
                         </Card>
 
                         <!-- CarouselSelect (https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#CarouselSelect) -->
@@ -78,6 +116,29 @@
                             />
                         </Carousel>
 
+                        <!-- RbmCarouselCard (https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#rbmcarouselcard) -->
+                        <Carousel v-if="component.rbmCarouselRichCard">
+                            <Card
+                                v-for="(card, card_id) in component.rbmCarouselRichCard.cardContents"
+                                :key="card_id"
+                                :title="card.title"
+                                :image-uri="card.media.fileUri"
+                                :text="card.description">
+                                <div v-for="(suggestion, suggestion_id) in card.suggestions" :key="suggestion_id">
+                                    <CardButton
+                                        v-if="suggestion.reply"
+                                        :title="suggestion.reply.text"
+                                        @click.native="send({text: suggestion.reply.text.postbackData})"
+                                    />
+                                    <CardButton
+                                        v-if="suggestion.action"
+                                        :title="suggestion.action.text"
+                                        :uri="suggestion.action.openUrl.uri"
+                                    />
+                                </div>
+                            </Card>
+                        </Carousel>
+
                         <!-- ListSelect (https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#ListSelect) -->
                         <List
                             v-if="component.listSelect"
@@ -85,7 +146,7 @@
                             :subtitle="component.listSelect.subtitle">
                             <ListItem
                                 v-for="item in component.listSelect.items"
-                                :key="item.title"
+                                :key="item.info.key"
                                 :title="item.title"
                                 :description="item.description"
                                 :image-uri="item.image.imageUri"
@@ -97,11 +158,11 @@
                         <!-- Image (https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#Image) -->
                         <Picture v-if="component.image" :uri="component.image.imageUri" :title="component.image.accessibilityText" />
 
-                        <!-- Image (https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#MediaContent) -->
+                        <!-- Media (https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#MediaContent) -->
                         <div v-if="component.mediaContent && component.mediaContent.mediaObjects">
                             <Media
-                                v-for="media in component.mediaContent.mediaObjects"
-                                :key="media.name"
+                                v-for="(media, media_id) in component.mediaContent.mediaObjects"
+                                :key="media_id"
                                 :name="media.name"
                                 :description="media.description"
                                 :icon-uri="media.icon ? media.icon.imageUri : media.largeImage.imageUri"
@@ -109,11 +170,28 @@
                                 :uri="media.contentUrl"
                             />
                         </div>
+
+                        <!-- TableCard (https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#tablecard) -->
+                        <TableCard
+                            v-if="component.tableCard"
+                            :title="component.tableCard.title"
+                            :subtitle="component.tableCard.subtitle"
+                            :image-uri="component.tableCard.image.imageUri"
+                            :image-title="component.tableCard.image.accessibilityText"
+                            :header="component.tableCard.columnProperties"
+                            :rows="component.tableCard.rows">
+                            <CardButton
+                                v-for="(button, button_id) in component.tableCard.buttons"
+                                :key="button_id"
+                                :uri="button.openUriAction.uri"
+                                :title="button.title"
+                            />
+                        </TableCard>
                     </RichComponent>
 
                     <!-- Actions on Google Components -->
                     <section v-if="message.queryResult.webhookPayload && message.queryResult.webhookPayload.google">
-                        <RichComponent v-for="(component, id) in message.queryResult.webhookPayload.google.richResponse.items" :key="id">
+                        <RichComponent v-for="(component, component_id) in message.queryResult.webhookPayload.google.richResponse.items" :key="component_id">
                             <!-- Simple response (https://developers.google.com/actions/assistant/responses#simple_response) -->
                             <Bubble
                                 v-if="component.simpleResponse"
@@ -129,8 +207,8 @@
                                 :image-title="component.basicCard.image.accessibilityText"
                                 :text="component.basicCard.formattedText">
                                 <CardButton
-                                    v-for="button in component.basicCard.buttons"
-                                    :key="button.title"
+                                    v-for="(button, button_id) in component.basicCard.buttons"
+                                    :key="button_id"
                                     :uri="button.openUrlAction.url"
                                     :title="button.title"
                                 />
@@ -139,8 +217,8 @@
                             <!-- Browsing Carousel (https://developers.google.com/actions/assistant/responses#browsing_carousel) -->
                             <List v-if="component.carouselBrowse">
                                 <ListItem
-                                    v-for="item in component.carouselBrowse.items"
-                                    :key="item.title"
+                                    v-for="(item, item_id) in component.carouselBrowse.items"
+                                    :key="item_id"
                                     :uri="item.openUrlAction.url"
                                     :title="item.title"
                                     :description="item.description"
@@ -153,8 +231,8 @@
                             <!-- Media responses (https://developers.google.com/actions/assistant/responses#media_responses) -->
                             <div v-if="component.mediaResponse && component.mediaResponse.mediaObjects">
                                 <Media
-                                    v-for="media in component.mediaResponse.mediaObjects"
-                                    :key="media.name"
+                                    v-for="(media, media_id) in component.mediaResponse.mediaObjects"
+                                    :key="media_id"
                                     :name="media.name"
                                     :description="media.description"
                                     :icon-uri="media.icon.url"
@@ -173,8 +251,8 @@
                                 :header="component.tableCard.columnProperties"
                                 :rows="component.tableCard.rows">
                                 <CardButton
-                                    v-for="button in component.tableCard.buttons"
-                                    :key="button.title"
+                                    v-for="(button, button_id) in component.tableCard.buttons"
+                                    :key="button_id"
                                     :uri="button.openUrlAction.url"
                                     :title="button.title"
                                 />
@@ -182,7 +260,7 @@
                         </RichComponent>
 
                         <!-- Visual Selection Responses (https://developers.google.com/actions/assistant/responses#visual_selection_responses) -->
-                        <RichComponent v-for="(component, id) in message.queryResult.webhookPayload.google.systemIntent" :key="id">
+                        <RichComponent v-for="(component, component_id) in message.queryResult.webhookPayload.google.systemIntent" :key="component_id">
                             <!-- List (https://developers.google.com/actions/assistant/responses#list) -->
                             <List
                                 v-if="component.listSelect"
@@ -231,14 +309,12 @@
                 https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#QuickReplies
                 https://cloud.google.com/dialogflow/docs/reference/rest/v2beta1/projects.agent.intents#Suggestions
             -->
-            <span v-if="suggestions.text_suggestions">
-                <Suggestion
-                    v-for="(suggestion, index) in suggestions.text_suggestions"
-                    :key="index"
-                    :title="suggestion"
-                    @click.native="send({text: suggestion})"
-                />
-            </span>
+            <Suggestion
+                v-for="(suggestion, suggestion_id) in suggestions.text_suggestions"
+                :key="suggestion_id"
+                :title="suggestion"
+                @click.native="send({text: suggestion})"
+            />
 
             <!-- Link suggestion chips
                 https://developers.google.com/actions/assistant/responses#suggestion_chips
@@ -247,7 +323,7 @@
             <Suggestion
                 v-if="suggestions.link_suggestion"
                 :title="suggestions.link_suggestion.destinationName"
-                :url="suggestions.link_suggestion.uri || suggestions.link_suggestion.url"
+                :uri="suggestions.link_suggestion.uri || suggestions.link_suggestion.url"
             />
         </ChatInput>
     </main>
@@ -473,6 +549,7 @@ export default {
                 for (const component in response.queryResult.fulfillmentMessages){
                     if (response.queryResult.fulfillmentMessages[component].text) text = response.queryResult.fulfillmentMessages[component].text.text[0]
                     if (response.queryResult.fulfillmentMessages[component].simpleResponses) text = response.queryResult.fulfillmentMessages[component].simpleResponses.simpleResponses[0].textToSpeech
+                    if (response.queryResult.fulfillmentMessages[component].rbmText) text = response.queryResult.fulfillmentMessages[component].rbmText.text
                 }
 
                 /* Actions on Google Simple response */
