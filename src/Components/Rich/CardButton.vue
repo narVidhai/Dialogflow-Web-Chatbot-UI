@@ -1,6 +1,6 @@
 <template>
     <a class="card-button" target="_blank" rel="noopener noreferrer" :href="uri">
-        <i class="material-icons card-button-icon" aria-hidden="true">arrow_forward</i>
+        <i class="material-icons card-button-icon" aria-hidden="true">{{uri ? 'arrow_forward' : 'reply'}}</i>
         <span class="card-button-title">{{title}}</span>
     </a>
 </template>
@@ -9,7 +9,7 @@
 .card-button
     text-decoration: none
     line-height: 24px
-    color: var(--accent)
+    color: var(--text)
     border: 1px solid var(--border)
     border-radius: 40px
     display: block
@@ -18,6 +18,10 @@
     text-align: center
     position: relative
     margin-top: 16px
+    cursor: pointer
+
+    &[href]
+        color: var(--accent)
 
 .card-button-icon
     left: 0

@@ -1,10 +1,10 @@
 <template>
     <a
-        v-if="url"
+        v-if="uri"
         class="suggestion"
         target="_blank"
         rel="noopener noreferrer"
-        :href="url">
+        :href="uri">
         {{title}}
     </a>
     <button v-else class="suggestion">{{title}}</button>
@@ -35,7 +35,7 @@
 export default {
     name: 'Suggestion',
     props: {
-        url: {
+        uri: {
             type: String,
             default: null
         },

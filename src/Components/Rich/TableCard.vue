@@ -8,10 +8,10 @@
         <div class="table-card-scrollable">
             <table class="table-card-table" cellspacing="0" cellpadding="0">
                 <tr>
-                    <th v-for="(head, i) in header" :key="i">{{head.header}}</th>
+                    <th v-for="(head, head_id) in header" :key="head_id">{{head.header}}</th>
                 </tr>
-                <tr v-for="(row, i) in rows" :key="i">
-                    <td v-for="cell in row.cells" :key="cell.text">{{cell.text}}</td>
+                <tr v-for="(row, row_id) in rows" :key="row_id">
+                    <td v-for="(cell, cell_id) in row.cells" :key="cell_id">{{cell.text}}</td>
                 </tr>
             </table>
         </div>

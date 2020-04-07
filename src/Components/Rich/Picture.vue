@@ -5,6 +5,7 @@
 <style lang="sass" scoped>
 .picture
     height: auto
+    width: 100%
     max-width: 100%
     border-radius: 12px
     box-shadow: var(--shadow)
