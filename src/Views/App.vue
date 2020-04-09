@@ -479,8 +479,8 @@ export default {
         }
 
         else {
-             /* Make post request to custom endpoint */
-            let dfDetailsURL = this.config.API_URL+'/get_dialogflow_account_details';
+             /* Make GET request to API endpoint */
+            let dfDetailsURL = this.config.API_URL + '/get_dialogflow_agent';
             this.$http.get ( dfDetailsURL ).then(function (dfRes) {
                 this.app = dfRes.body;
                 if (this.history()) sessionStorage.setItem('agent', JSON.stringify(dfRes.body))
@@ -524,8 +524,8 @@ export default {
             this.loading = true
             this.error = null
            
-            /* Make post request to custom endpoint */
-            let queryResURL = this.config.API_URL+'/get_response_for_query';
+            /* Make POST request to API endpoint */
+            let queryResURL = this.config.API_URL + '/detect_intent';
             
             this.$http.post ( queryResURL, JSON.stringify(request) ).then(function (queryResponse) {
                 this.messages.push(queryResponse.body)
