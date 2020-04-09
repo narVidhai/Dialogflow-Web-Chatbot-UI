@@ -13,7 +13,8 @@
     "hark": "^1.2.3",
     "langs": "^2.0.0",
     "register-service-worker": "^1.7.1",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-resource": "^1.5.1"
   },
   "devDependencies": {
     "@mishushakov/eslint-config": "^1.0.6",

@@ -374,8 +374,10 @@ import TableCard from '@/Components/Rich/TableCard.vue'
 import Suggestion from '@/Components/Rich/Suggestion.vue'
 
 import * as uuidv1 from 'uuid/v1'
+import Vue from 'vue'
+import VueResource from 'vue-resource'
+Vue.use(VueResource);
 
-import { Client } from 'dialogflow-gateway'
 
 export default {
     name: 'App',
@@ -406,7 +408,7 @@ export default {
             muted: this.config.muted,
             loading: false,
             error: null,
-            client: new Client(this.config.endpoint).connect()
+            // client: new Client(this.config.endpoint).connect()
         }
     },
     computed: {
@@ -477,10 +479,11 @@ export default {
         }
 
         else {
-            this.client.get()
-            .then(agent => {
-                this.app = agent
-                if (this.history()) sessionStorage.setItem('agent', JSON.stringify(agent))
+             /* Make post request to custom endpoint */
+            let dfDetailsURL = this.config.API_URL+'/get_dialogflow_account_details';
+            this.$http.get ( dfDetailsURL ).then(function (dfRes) {
+                this.app = dfRes.body;
+                if (this.history()) sessionStorage.setItem('agent', JSON.stringify(dfRes.body))
             })
             .catch(error => {
                 this.error = error.message
@@ -520,21 +523,22 @@ export default {
 
             this.loading = true
             this.error = null
-
-            /* Send the request to endpoint */
-            this.client.send(request)
-            .then(response => {
-                this.messages.push(response)
-                this.handle(response) // <- trigger the handle function (explanation below)
-                // console.log(response) // <- (optional) log responses
+           
+            /* Make post request to custom endpoint */
+            let queryResURL = this.config.API_URL+'/get_response_for_query';
+            
+            this.$http.post ( queryResURL, JSON.stringify(request) ).then(function (queryResponse) {
+                this.messages.push(queryResponse.body)
+                this.handle(queryResponse.body) // <- trigger the handle function (explanation below)
             })
             .catch(error => {
                 this.error = error.message
             })
             .then(() => this.loading = false)
+            
         },
         handle(response){
-            /* This function is used for speech output */
+            /* This function is used for speech output */ 
             if (response.outputAudio){
                 const output = new Audio(`data:audio/mp3;base64,${response.outputAudio}`)
                 output.onended = () => this.$refs.input.listen()
