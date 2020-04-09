@@ -6,12 +6,6 @@
 
 This is a unofficial Web Integration for the Dialogflow V2
 
-The development of the project is done by [mishushakov](https://github.com/mishushakov) in his free-time. If you want to support, click the "Sponsor" button:
-
-![Support Dialogflow for Web v2](https://i.imgur.com/adRvGaY.png)
-
-If you have any questions, feel free to [contact](https://mish.co/contact)
-
 ## Features
 
 - Progressive Web App (100/100 Lighthouse score)
@@ -30,38 +24,20 @@ If you have any questions, feel free to [contact](https://mish.co/contact)
 - Made in Germany
 - Recommended by [Dialogflow](https://twitter.com/Dialogflow/status/923976390201847809) and [MadeWithVueJS](https://twitter.com/MadeWithVueJS/status/1130147606666063875)
 
-## In this update
-
-61 changes, including:
-
-- New Dark-mode theme, inspired by Google
-- Active listening feature
-- Improved project structure
-- Bundled fonts for GDPR
-- Better design and improved bubbles
-
-the update was brought to you by [Vokode](https://www.vokode.com) - an audio marketing studio from Paris, which does: sound design, podcast and voice apps
-
-![Vokode](https://www.vokode.com/wp-content/uploads/2019/01/vokode-horizontal-web.png)
-
 # Installation
 
 ## Requirements
 
 - NodeJS
 - npm or Yarn
-- Google Account and Dialogflow V2 Agent (if you look for V1, please use my [old repo](https://github.com/mishushakov/dialogflow-web))
-
-## [Read the license](LICENSE)
+- Google Account and Dialogflow V2 Agent (if you look for V1, use this [old repo](https://github.com/mishushakov/dialogflow-web))
 
 ## Set up Dialogflow Gateway (backend)
 
 Dialogflow Gateway enables third-party integrations like this one to securely access the Dialogflow V2 API
 
 - [Documentation](https://github.com/mishushakov/dialogflow-gateway-docs)
-- [Implementations](https://github.com/mishushakov/dialogflow-gateway-docs#implementations)
-
-`AD` [Dialogflow Gateway by Ushakov (Hosted)](https://dialogflow.cloud.ushakov.co) is the quickest way to get started with Dialogflow for Web v2
+- [Implementation](https://github.com/narVidhai/Dialogflow-Gateway-Server)
 
 ## Clone the repository
 
